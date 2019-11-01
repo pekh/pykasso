@@ -34,6 +34,10 @@ def abrechnungen_aus_transaktionen(transaktionen: List[Dict[str, str]]) -> List[
 
     result = []
     for (name, vorname), a_positionen in positionen.items():
-        result.append(Abrechnung(vorname=vorname, name=name, positionen=a_positionen))
+        result.append(
+            Abrechnung(vorname=vorname, name=name,
+                       positionen=sorted(a_positionen, key=lambda x: x.datum)
+                      )
+            )
 
     return result

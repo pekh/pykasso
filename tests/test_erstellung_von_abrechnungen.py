@@ -66,3 +66,22 @@ def test_mehrere_transaktionen_zu_verschiedenen_konten():
     abrechnungen = abrechnungen_aus_transaktionen(transaktionen)
 
     pruefe_abrechnungen_gegen_erwartung(abrechnungen, erwartung)
+
+def test_ungeordnete_transaktionen_werden_geordnet():
+    erwartung = {
+        ('Name1', 'Vorname1'): [
+            (date(2019, 7, 13), 'Buchungstext 1', Decimal('3.27')),
+            (date(2019, 7, 14), 'Buchungstext 2', Decimal('13.59')),
+            (date(2019, 11, 13), 'Buchungstext 4', Decimal('256.01'))
+            ],
+        ('Name2', 'Vorname2'): [
+            (date(2019, 10, 15), 'Buchungstext 3', Decimal('-59.27'))
+        ]
+    }
+
+    _trans = erstelle_transaktionen_aus_erwartung(erwartung)
+    _trans_even = [t for i, t in enumerate(_trans) if i % 2 == 0]
+    _trans_odd = [t for i, t in enumerate(_trans) if i % 2 == 1]
+    abrechnungen = abrechnungen_aus_transaktionen(_trans_even + _trans_odd)
+
+    pruefe_abrechnungen_gegen_erwartung(abrechnungen, erwartung)
