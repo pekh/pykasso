@@ -19,6 +19,10 @@ class Abrechnung:
     vorname: str
     positionen: List[AbrechnungsPosition]
 
+    @property
+    def betrag(self):
+        return sum([pos.wert for pos in self.positionen])
+
 
 def abrechnungen_aus_transaktionen(transaktionen: List[Dict[str, str]]) -> List[Abrechnung]:
     positionen = defaultdict(list)
