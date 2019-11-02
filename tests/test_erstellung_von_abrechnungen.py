@@ -2,20 +2,20 @@
 from datetime import date
 from decimal import Decimal
 
-from pykasso.abrechnung import abrechnungen_aus_transaktionen
+from pykasso.abrechnung import abrechnungen_aus_transaktionen, Mitglied
 
 
 def erstelle_transaktionen_aus_erwartung(erwartung):
     result = []
-    for (name, vorname), positionen in erwartung.items():
+    for mitglied, positionen in erwartung.items():
         for datum, text, wert in positionen:
             result.append(
                 {
                     'Date': datum.strftime('%d.%m.%Y'),
-                    'Account Name': f'Passiva:Mitglieder:{vorname} {name}',
+                    'Account Name': f'Passiva:Mitglieder:{mitglied.vorname} {mitglied.name}',
                     'Description': text,
                     'Full Category Path': 'Aktiva:Bank',
-                    'Amount Num': f'{wert:.2f}'.replace('.', ',')
+                    'Amount Num.': f'{wert:.2f}'.replace('.', ',')
                 }
             )
 
@@ -25,7 +25,7 @@ def pruefe_abrechnungen_gegen_erwartung(abrechnungen, erwartung):
     assert len(abrechnungen) == len(erwartung.keys())
 
     for abrechnung in abrechnungen:
-        erwartete_transaktionen = erwartung[(abrechnung.name, abrechnung.vorname)]
+        erwartete_transaktionen = erwartung[abrechnung.mitglied]
 
         assert len(abrechnung.positionen) == len(erwartete_transaktionen)
 
@@ -38,7 +38,7 @@ def pruefe_abrechnungen_gegen_erwartung(abrechnungen, erwartung):
 
 def test_mehrere_transaktionen_zum_selben_kto():
     erwartung = {
-        ('name', 'vorname'): [
+        Mitglied('name', 'vorname'): [
             (date(2019, 7, 13), 'Buchungstext 1', Decimal('113.27')),
             (date(2019, 7, 13), 'Buchungstext 2', Decimal('-59.07')),
         ],
@@ -52,12 +52,12 @@ def test_mehrere_transaktionen_zum_selben_kto():
 
 def test_mehrere_transaktionen_zu_verschiedenen_konten():
     erwartung = {
-        ('Name1', 'Vorname1'): [
+        Mitglied('Name1', 'Vorname1'): [
             (date(2019, 7, 13), 'Buchungstext 1', Decimal('3.27')),
             (date(2019, 7, 14), 'Buchungstext 2', Decimal('13.59')),
             (date(2019, 11, 13), 'Buchungstext 4', Decimal('256.01'))
             ],
-        ('Name2', 'Vorname2'): [
+        Mitglied('Name2', 'Vorname2'): [
             (date(2019, 10, 15), 'Buchungstext 3', Decimal('-59.27'))
         ]
     }
@@ -69,12 +69,12 @@ def test_mehrere_transaktionen_zu_verschiedenen_konten():
 
 def test_ungeordnete_transaktionen_werden_geordnet():
     erwartung = {
-        ('Name1', 'Vorname1'): [
+        Mitglied('Name1', 'Vorname1'): [
             (date(2019, 7, 13), 'Buchungstext 1', Decimal('3.27')),
             (date(2019, 7, 14), 'Buchungstext 2', Decimal('13.59')),
             (date(2019, 11, 13), 'Buchungstext 4', Decimal('256.01'))
             ],
-        ('Name2', 'Vorname2'): [
+        Mitglied('Name2', 'Vorname2'): [
             (date(2019, 10, 15), 'Buchungstext 3', Decimal('-59.27'))
         ]
     }

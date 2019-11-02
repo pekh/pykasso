@@ -6,6 +6,12 @@ from decimal import Decimal
 from typing import Dict, List
 
 
+@dataclass(eq=True, frozen=True)
+class Mitglied:
+    name: str
+    vorname: str
+
+
 @dataclass
 class AbrechnungsPosition:
     datum: date
@@ -15,8 +21,7 @@ class AbrechnungsPosition:
 
 @dataclass
 class Abrechnung:
-    name: str
-    vorname: str
+    mitglied: Mitglied
     positionen: List[AbrechnungsPosition]
 
     @property
@@ -28,20 +33,18 @@ def abrechnungen_aus_transaktionen(transaktionen: List[Dict[str, str]]) -> List[
     positionen = defaultdict(list)
     for transaktion in transaktionen:
         vorname, name = transaktion['Account Name'].split(':')[-1].split(' ')
-        positionen[(name, vorname)].append(
+        positionen[Mitglied(name, vorname)].append(
             AbrechnungsPosition(
                 datum=datetime.strptime(transaktion['Date'], '%d.%m.%Y').date(),
                 text=transaktion['Description'],
-                wert=Decimal(transaktion['Amount Num'].replace(',', '.')),
+                wert=Decimal(transaktion['Amount Num.'].replace(',', '.')),
                 )
             )
 
     result = []
-    for (name, vorname), a_positionen in positionen.items():
+    for mitglied, a_positionen in positionen.items():
         result.append(
-            Abrechnung(vorname=vorname, name=name,
-                       positionen=sorted(a_positionen, key=lambda x: x.datum)
-                      )
+            Abrechnung(mitglied, positionen=sorted(a_positionen, key=lambda x: x.datum))
             )
 
     return result

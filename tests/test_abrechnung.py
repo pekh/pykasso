@@ -7,12 +7,12 @@ from pykasso.abrechnung import Abrechnung, AbrechnungsPosition
 
 class TestAbrechnungsSaldo:
     def test_betrag_wenn_keine_positionen_vorhanden(self):
-        abrechnung = Abrechnung('name', 'vorname', positionen=[])
+        abrechnung = Abrechnung(None, positionen=[])
 
         assert abrechnung.betrag == 0
 
     def test_betrag_ueber_alle_positionen(self):
-        abrechnung = Abrechnung('name', 'vorname', positionen=[
+        abrechnung = Abrechnung(None, positionen=[
             AbrechnungsPosition(None, '', Decimal('13.72')),
             AbrechnungsPosition(None, '', Decimal('-113.01')),
             AbrechnungsPosition(None, '', Decimal('99')),
