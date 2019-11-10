@@ -10,6 +10,12 @@ from typing import Dict, List
 class Mitglied:
     name: str
     vorname: str
+    anrede: str = 'Hallo'
+    strasse: str = ''
+    plz: str = ''
+    ort: str = ''
+    land: str = ''
+    email: str = ''
 
 
 @dataclass
@@ -24,6 +30,8 @@ class Abrechnung:
     mitglied: Mitglied
     positionen: List[AbrechnungsPosition]
 
+    # evtl könnte das Iterator-Protokoll implementiert werden, um über die
+    # Positionen zu iterieren
     @property
     def betrag(self):
         return sum([pos.wert for pos in self.positionen])
