@@ -6,6 +6,7 @@ setup(
     description='Werkzeuge für die Kasse',
     author='Jan-Peer Grunwald',
     author_email='pekh@eufrutki.net',
+    license='MIT',
     packages=find_packages(),
     entry_points={
         'console_scripts': [
